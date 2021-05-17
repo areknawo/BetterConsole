@@ -1,0 +1,38 @@
+{
+  "manifest_version": 2,
+  "name": "BetterConsole",
+  "version": "1.0.0",
+  "icons": {
+    "16": "assets/icons/icon@16.png",
+    "32": "assets/icons/icon@32.png",
+    "64": "assets/icons/icon@64.png",
+    "128": "assets/icons/icon@128.png"
+  },
+  "background": { "scripts": ["background/index.ts"] },
+  "permissions": ["activeTab", "storage", "unlimitedStorage"],
+  "devtools_page": "views/editor/index.html",
+  "web_accessible_resources": [
+    "tailwind.css",
+    "style.css",
+    "views/editor/index.html",
+    "views/console/index.html",
+    "content/index.tsx",
+    "utils/console.ts"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://areknawo.com/*"],
+      "run_at": "document_end",
+      "js": ["content/index.tsx"]
+    }
+  ],
+  "browser_action": {
+    "default_icon": {
+      "16": "assets/icons/icon@16.png",
+      "32": "assets/icons/icon@32.png",
+      "64": "assets/icons/icon@64.png",
+      "128": "assets/icons/icon@128.png"
+    }
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval' blob: filesystem:;object-src 'self' blob: filesystem:;"
+}

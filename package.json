@@ -1,0 +1,63 @@
+{
+  "name": "betterconsole",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome extension",
+  "targets": {
+    "webext-dev": {
+      "sourceMap": {
+        "inline": true,
+        "inlineSources": true
+      }
+    },
+    "webext-prod": {}
+  },
+  "scripts": {
+    "start": "parcel src/manifest.json --host localhost --target webext-dev",
+    "build": "parcel build src/manifest.json --target webext-prod --no-source-maps"
+  },
+  "dependencies": {
+    "@areknawo/monaco-editor": "^0.24.0",
+    "@mdi/js": "^5.9.55",
+    "clsx": "^1.1.1",
+    "console-feed": "^3.2.2",
+    "interactjs": "^1.10.11",
+    "prettier": "^2.2.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "sass.js": "^0.11.1",
+    "typescript": "^4.2.4",
+    "vue": "^3.0.11",
+    "webextension-polyfill-ts": "^0.25.0"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.13.0",
+    "@parcel/babel-plugin-transform-runtime": "^2.0.0-nightly.2234",
+    "@parcel/babel-preset-env": "^2.0.0-nightly.612",
+    "@parcel/config-webextension": "^2.0.0-nightly.2234",
+    "@parcel/optimizer-cssnano": "2.0.0-nightly.612",
+    "@parcel/optimizer-htmlnano": "2.0.0-nightly.612",
+    "@parcel/packager-css": "2.0.0-nightly.612",
+    "@parcel/packager-html": "2.0.0-nightly.612",
+    "@parcel/transformer-css": "2.0.0-nightly.612",
+    "@parcel/transformer-html": "2.0.0-nightly.612",
+    "@parcel/transformer-postcss": "2.0.0-nightly.612",
+    "@parcel/transformer-posthtml": "2.0.0-nightly.612",
+    "@parcel/transformer-typescript-tsc": "^2.0.0-nightly.612",
+    "@tailwindcss/forms": "^0.3.2",
+    "@types/chrome": "^0.0.140",
+    "@types/prettier": "^2.2.3",
+    "@types/resize-observer-browser": "^0.1.5",
+    "@types/tailwindcss": "^2.0.3",
+    "@vue/babel-plugin-jsx": "^1.0.6",
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "autoprefixer": "^10.2.5",
+    "eslint": "^7.25.0",
+    "eslint-config-xtrict": "^3.0.1",
+    "eslint-plugin-vue": "^7.9.0",
+    "monaco-editor": "^0.23.0",
+    "parcel": "^2.0.0-beta.1",
+    "postcss": "^8.2.14",
+    "tailwindcss": "^2.1.2"
+  }
+}

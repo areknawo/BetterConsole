@@ -1,0 +1,4 @@
+@font-face {
+  font-family: "codicon";
+  src: url("../../../node_modules/@areknawo/monaco-editor/dist/codicon.ttf") format("truetype");
+}

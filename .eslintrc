@@ -1,0 +1,52 @@
+{
+  "env": {
+    "node": true,
+    "webextensions": true
+  },
+  "extends": [
+      "xtrict/configs/errors",
+      "xtrict/configs/es6",
+      "xtrict/configs/modules",
+      "xtrict/configs/practices",
+      "xtrict/configs/style",
+      "xtrict/configs/variables",
+      "plugin:vue/vue3-essential",
+      "@vue/typescript/recommended"
+  ],
+  "rules": {
+    "max-lines-per-function": [
+        "error",
+        100
+    ],
+    "max-len": "off",
+    "semi": "off",
+    "sort-keys": "off",
+    "newline-per-chained-call": "off",
+    "func-call-spacing": "off",
+    "linebreak-style": "off",
+    "no-empty-function": ["error", { "allow": ["arrowFunctions"] }],
+    "no-tabs": "off",
+    "no-dupe-class-members": "off",
+    "no-unused-vars": "off",
+    "no-undef": "off",
+    "no-mixed-operators": "off",
+    "no-magic-numbers": "off",
+    "unicorn/no-null": "off",
+    "unicorn/filename-case": "off",
+    "import/no-default-export": "off",
+    "object-property-newline": "off",
+    "multiline-comment-style": ["error", "bare-block"],
+    "@typescript-eslint/explicit-function-return-type": [
+        "error",
+      {
+        "allowExpressions": true,
+        "allowTypedFunctionExpressions": true,
+        "allowHigherOrderFunctions": true
+      }
+    ],
+    "@typescript-eslint/no-empty-function": ["error", { "allow": ["arrowFunctions"] }],
+    "@typescript-eslint/explicit-member-accessibility": "error",
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/member-ordering": "error"
+  }
+}

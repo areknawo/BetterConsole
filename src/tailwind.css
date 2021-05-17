@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.red-to-yellow {
+  @apply from-red-500;
+  @apply to-yellow-500;
+}
+.red-to-purple {
+  @apply from-red-500;
+  @apply to-purple-500;
+}
+.green-to-blue {
+  @apply from-green-500;
+  @apply to-blue-500;
+}
+.blue-to-purple {
+  @apply from-blue-500;
+  @apply to-purple-500;
+}
