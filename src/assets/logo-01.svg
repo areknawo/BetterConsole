@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+    <defs>
+        <style>
+            .cls-1 {
+                isolation: isolate;
+            }
+
+            .cls-2 {
+                opacity: 0.3;
+                mix-blend-mode: multiply;
+            }
+
+            .cls-3 {
+                fill: url(#linear-gradient);
+            }
+
+            .cls-4 {
+                opacity: 0.5;
+            }
+
+            .cls-5 {
+                fill: #fff;
+            }
+        </style>
+        <linearGradient id="linear-gradient" x1="50" y1="500" x2="950" y2="500" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#c1272d" />
+            <stop offset="1" stop-color="#fbb03b" />
+        </linearGradient>
+    </defs>
+    <title>logo</title>
+    <g class="cls-1">
+        <g id="Layer_1" data-name="Layer 1">
+            <rect class="cls-5" x="263.48" y="191.34" width="139.98" height="419.94" rx="35"
+                transform="translate(-186.1 353.34) rotate(-45)" />
+        </g>
+    </g>
+</svg>
