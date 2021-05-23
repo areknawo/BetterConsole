@@ -1,4 +1,4 @@
-import { ref, shallowReactive, watch } from "vue";
+import { ref, shallowReactive, toRaw, watch } from "vue";
 import { browser } from "webextension-polyfill-ts";
 
 type Color = "red-to-yellow" | "red-to-purple" | "blue-to-purple" | "green-to-blue";
@@ -22,6 +22,8 @@ interface Store {
   width: number;
   direction: string;
   logs: unknown[];
+  username: string;
+  license: string;
 }
 
 let cache: Store | null = null;
@@ -39,7 +41,7 @@ const setupWatcher = (): void => {
     });
     watch(cache, async (store) => {
       if (!fromMessage.value) {
-        await browser.storage.local.set(store);
+        await browser.storage.local.set(toRaw(store));
       }
 
       fromMessage.value = false;
@@ -64,7 +66,9 @@ const getDefaults = (): Store => {
     height: 400,
     width: 500,
     logs: [],
-    mode: "js"
+    mode: "js",
+    username: "",
+    license: ""
   });
 };
 const getStore = (): Store => {

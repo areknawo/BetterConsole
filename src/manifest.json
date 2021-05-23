@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "BetterConsole",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "icons": {
     "16": "assets/icons/icon@16.png",
     "32": "assets/icons/icon@32.png",
@@ -9,7 +9,7 @@
     "128": "assets/icons/icon@128.png"
   },
   "background": { "scripts": ["background/index.ts"] },
-  "permissions": ["activeTab", "storage", "unlimitedStorage"],
+  "permissions": ["activeTab", "storage", "unlimitedStorage", "contextMenus"],
   "devtools_page": "views/editor/index.html",
   "web_accessible_resources": [
     "tailwind.css",
@@ -18,13 +18,6 @@
     "views/console/index.html",
     "content/index.tsx",
     "utils/console.ts"
-  ],
-  "content_scripts": [
-    {
-      "matches": ["*://areknawo.com/*"],
-      "run_at": "document_end",
-      "js": ["content/index.tsx"]
-    }
   ],
   "browser_action": {
     "default_icon": {

@@ -1,5 +1,6 @@
 import * as monaco from "@areknawo/monaco-editor";
 import { defineComponent, onMounted, ref, watch } from "vue";
+import { gray, white } from "tailwindcss/colors";
 import { getStore } from "~/src/utils/store";
 
 monaco.editor.defineTheme("dark", {
@@ -7,11 +8,11 @@ monaco.editor.defineTheme("dark", {
   inherit: true,
   rules: [],
   colors: {
-    "editor.background": "#1f2937",
-    "editor.foreground": "#ffffff",
-    "editor.selectionBackground": "#4b5563",
-    "editor.lineHighlightBackground": "#374151",
-    "editorCursor.foreground": "#ffffff"
+    "editor.background": gray["800"],
+    "editor.foreground": white,
+    "editor.selectionBackground": gray["700"],
+    "editor.lineHighlightBackground": gray["600"],
+    "editorCursor.foreground": white
   }
 });
 monaco.editor.defineTheme("light", {
@@ -19,11 +20,11 @@ monaco.editor.defineTheme("light", {
   inherit: true,
   rules: [],
   colors: {
-    "editor.background": "#f3f4f6",
-    "editor.foreground": "#1f2937",
-    "editor.selectionBackground": "#e5e7eb",
-    "editor.lineHighlightBackground": "#f9fafb",
-    "editorCursor.foreground": "#1f2937"
+    "editor.background": gray["100"],
+    "editor.foreground": gray["900"],
+    "editor.selectionBackground": gray["200"],
+    "editor.lineHighlightBackground": gray["50"],
+    "editorCursor.foreground": gray["900"]
   }
 });
 

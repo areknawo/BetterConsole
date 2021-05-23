@@ -5,6 +5,7 @@ type Origin = "center" | "top-right" | "top-left" | "bottom-right" | "bottom-lef
 
 const Overlay = defineComponent({
   props: {
+    absolute: Boolean,
     opened: {
       required: true,
       type: Boolean
@@ -26,7 +27,8 @@ const Overlay = defineComponent({
       return (
         <div
           class={clsx([
-            "transition-opacity transform fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-900 opacity-80 z-40 duration-700",
+            "transition-opacity transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-900 opacity-80 z-40 duration-700",
+            props.absolute ? "absolute" : "fixed",
             `origin-${props.origin}`,
             getOverlayClass()
           ])}

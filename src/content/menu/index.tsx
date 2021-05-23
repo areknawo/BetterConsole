@@ -108,11 +108,11 @@ const Menu = defineComponent({
         >
           <div
             class={clsx(
-              "pointer-events-auto z-full w-full rounded-2xl absolute bottom-2 flex justify-center items-center hover:opacity-100",
+              "z-full pointer-events-auto w-full rounded-2xl absolute bottom-2 flex justify-center items-center hover:opacity-100",
               isModeOpened.value || isSettingsOpened.value ? "" : "opacity-50 "
             )}
           >
-            <div class="bg-gray-200 dark:bg-gray-700 shadow-lg max-w-sm rounded-2xl flex justify-center items-center mx-2">
+            <div class="flex items-center justify-center max-w-sm mx-2 bg-gray-200 shadow-lg dark:bg-gray-700 rounded-2xl">
               {menu.map((item) => {
                 return item.type === "form" ? (
                   <FormItem
@@ -191,7 +191,7 @@ const Menu = defineComponent({
           <Dialog
             opened={isSettingsOpened}
             origin="center"
-            class="h-full w-full text-gray-900 dark:text-white"
+            class="w-full h-full text-gray-900 dark:text-white"
           >
             <Settings />
           </Dialog>

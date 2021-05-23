@@ -102,7 +102,7 @@ const Console = defineComponent({
     });
 
     return () => {
-      return h("div", { class: "h-full pb-12 overflow-y-scroll", ref: containerRef });
+      return h("div", { class: "h-full pb-12 overflow-y-auto", ref: containerRef });
     };
   }
 });

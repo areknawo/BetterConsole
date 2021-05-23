@@ -1,6 +1,6 @@
 {
   "name": "betterconsole",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "Chrome extension",
   "targets": {
@@ -13,14 +13,15 @@
     "webext-prod": {}
   },
   "scripts": {
-    "start": "parcel src/manifest.json --host localhost --target webext-dev",
-    "build": "parcel build src/manifest.json --target webext-prod --no-source-maps"
+    "start": "parcel src/manifest.json --host localhost --target webext-dev --no-source-maps",
+    "build": "node --max-old-space-size=12288 ./node_modules/.bin/parcel build src/manifest.json --target webext-prod --no-source-maps"
   },
   "dependencies": {
     "@areknawo/monaco-editor": "^0.24.0",
     "@mdi/js": "^5.9.55",
     "clsx": "^1.1.1",
     "console-feed": "^3.2.2",
+    "firebase": "^8.6.1",
     "interactjs": "^1.10.11",
     "prettier": "^2.2.1",
     "react": "^17.0.2",

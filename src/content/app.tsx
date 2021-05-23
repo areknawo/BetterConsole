@@ -1,5 +1,6 @@
 import { Bubble, ResizeHandler } from "./bubble";
 import { PropType, Ref, computed, defineComponent, onMounted, reactive, ref, watch } from "vue";
+import { Store, getStore } from "~/src/utils/store";
 import {
   mdiDragVerticalVariant,
   mdiFormatHorizontalAlignCenter,
@@ -7,13 +8,13 @@ import {
   mdiFormatHorizontalAlignRight,
   mdiSync
 } from "@mdi/js";
+import { BetaDialog } from "~/src/content/beta";
 import { Button } from "~/src/components/button";
 import { Menu } from "./menu";
 import { Size } from "@interactjs/types";
 import { Tooltip } from "~/src/components/tooltip";
 import { browser } from "webextension-polyfill-ts";
 import clsx from "clsx";
-import { getStore } from "~/src/utils/store";
 import interact from "interactjs";
 
 type PanelType = "editor" | "console";
@@ -42,26 +43,29 @@ const getPanelSource = (type: PanelType): string => {
 const getPanelLabel = (type: PanelType): string => {
   return type === "console" ? "Console" : "Editor";
 };
+const resizePanel = (state: AppState): void => {
+  const rightPanel = state.rightPanelRef.value;
+  const leftPanel = state.leftPanelRef.value;
+  const containerWidth = state.containerWidth.value;
+  const rightPanelWidth = state.rightPanelWidth.value;
+
+  if (rightPanel && leftPanel) {
+    Object.assign(rightPanel.style, {
+      minWidth: "32px",
+      maxWidth: `${containerWidth}px`,
+      width: `calc(${(rightPanelWidth / containerWidth) * 100}% + 16px)`
+    });
+    Object.assign(leftPanel.style, {
+      minWidth: "0",
+      maxWidth: `calc(${containerWidth}px - 32px)`,
+      width: `calc(${((containerWidth - rightPanelWidth) / containerWidth) * 100}% - 16px)`
+    });
+  }
+};
 const setupResize = (state: AppState): ResizeHandler => {
   const interactable = ref<ReturnType<typeof interact> | null>(null);
+  const resizing = ref(false);
 
-  watch(
-    [state.containerWidth, state.rightPanelWidth, state.rightPanelRef, state.leftPanelRef],
-    ([containerWidth, rightPanelWidth, rightPanel, leftPanel]) => {
-      if (rightPanel && leftPanel) {
-        Object.assign(rightPanel.style, {
-          minWidth: "32px",
-          maxWidth: `${containerWidth}px`,
-          width: `calc(${(rightPanelWidth / containerWidth) * 100}% + 16px)`
-        });
-        Object.assign(leftPanel.style, {
-          minWidth: "0",
-          maxWidth: `calc(${containerWidth}px - 32px)`,
-          width: `calc(${((containerWidth - rightPanelWidth) / containerWidth) * 100}% - 16px)`
-        });
-      }
-    }
-  );
   onMounted(() => {
     if (state.rightPanelRef.value) {
       interactable.value = interact(state.rightPanelRef.value).resizable({
@@ -72,12 +76,14 @@ const setupResize = (state: AppState): ResizeHandler => {
         listeners: {
           start() {
             state.render.value = false;
+            resizing.value = true;
           },
           end() {
             state.render.value = true;
           },
           move(event) {
             state.rightPanelWidth.value = event.rect.width;
+            resizePanel(state);
           }
         },
         modifiers: [
@@ -91,12 +97,12 @@ const setupResize = (state: AppState): ResizeHandler => {
 
   return ({ width }) => {
     const multiplier = (width || state.containerWidth.value) / state.containerWidth.value;
+    const containerWidth = width || state.containerWidth.value;
+    const rightPanelWidth = Math.min(containerWidth, state.rightPanelWidth.value * multiplier);
 
-    state.containerWidth.value = width || state.containerWidth.value;
-    state.rightPanelWidth.value = Math.min(
-      state.containerWidth.value,
-      state.rightPanelWidth.value * multiplier
-    );
+    state.containerWidth.value = containerWidth;
+    state.rightPanelWidth.value = rightPanelWidth;
+    resizePanel(state);
 
     if (interactable.value) {
       interactable.value.resizable({
@@ -109,8 +115,7 @@ const setupResize = (state: AppState): ResizeHandler => {
     }
   };
 };
-const setupState = (): AppState => {
-  const store = getStore();
+const setupState = (store: Store): AppState => {
   const containerRef = ref<HTMLElement | null>(null);
   const rightPanelRef = ref<HTMLElement | null>(null);
   const leftPanelRef = ref<HTMLElement | null>(null);
@@ -165,7 +170,6 @@ const ResizeMenu = defineComponent({
   setup(props) {
     return () => {
       const { containerWidth, leftPanel, rightPanel, rightPanelWidth } = props.state;
-
       const tooltipsRight = rightPanelWidth.value >= containerWidth.value / 2;
 
       return (
@@ -195,6 +199,7 @@ const ResizeMenu = defineComponent({
               label: "To left",
               onClick() {
                 rightPanelWidth.value = containerWidth.value;
+                resizePanel(props.state);
               }
             },
 
@@ -205,6 +210,7 @@ const ResizeMenu = defineComponent({
               label: "To right",
               onClick() {
                 rightPanelWidth.value = 0;
+                resizePanel(props.state);
               }
             },
             {
@@ -212,6 +218,7 @@ const ResizeMenu = defineComponent({
               label: "Center",
               onClick() {
                 rightPanelWidth.value = containerWidth.value / 2;
+                resizePanel(props.state);
               }
             }
           ].map(({ icon, size, iconSize, onClick, label }) => {
@@ -237,74 +244,79 @@ const ResizeMenu = defineComponent({
 });
 const App = defineComponent({
   setup() {
-    const state = setupState();
+    const store = getStore();
+    const state = setupState(store);
     const onResize = setupResize(state);
+    const renderUI = Boolean(store.username && store.license);
 
     return () => (
-      <>
-        <Bubble onResize={onResize}>
-          <div class="w-full h-full relative flex" ref={state.containerRef}>
-            <div
-              class={clsx(
-                "relative top-0 left-0 h-full rounded-2xl flex justify-center items-center overflow-hidden bg-gray-100 dark:bg-gray-800"
-              )}
-              ref={state.leftPanelRef}
-            >
-              <iframe
+      <Bubble onResize={onResize} showResizeHandle={renderUI}>
+        {renderUI ? (
+          <>
+            <div class="w-full h-full relative flex" ref={state.containerRef}>
+              <div
                 class={clsx(
-                  "h-full w-full rounded-2xl",
-                  (!state.render.value || !state.leftPanel.loaded) && "hidden"
+                  "relative top-0 left-0 h-full rounded-2xl flex justify-center items-center overflow-hidden bg-gray-100 dark:bg-gray-800"
                 )}
-                src={getPanelSource(state.leftPanel.type)}
-                onLoad={() => {
-                  state.leftPanel.loaded = true;
-                }}
-              />
-              <span
-                class={clsx(
-                  "text-gray-500 dark:text-gray-300 absolute text-white font-semibold text-xl",
-                  state.render.value && state.leftPanel.loaded && "hidden"
-                )}
+                ref={state.leftPanelRef}
               >
-                {getPanelLabel(state.leftPanel.type)}
-              </span>
-            </div>
-            <div class="top-0 right-0 h-full rounded-2xl relative" ref={state.rightPanelRef}>
-              <ResizeMenu state={state} />
-              <div class="ml-8 relative h-full rounded-2xl overflow-hidden">
-                <div
+                <iframe
                   class={clsx(
-                    "w-full h-full rounded-2xl flex justify-center items-center bg-gray-100 dark:bg-gray-800"
+                    "h-full w-full rounded-2xl",
+                    (!state.render.value || !state.leftPanel.loaded) && "hidden"
+                  )}
+                  src={getPanelSource(state.leftPanel.type)}
+                  onLoad={() => {
+                    state.leftPanel.loaded = true;
+                  }}
+                />
+                <span
+                  class={clsx(
+                    "text-gray-500 dark:text-gray-300 absolute text-white font-semibold text-xl",
+                    state.render.value && state.leftPanel.loaded && "hidden"
                   )}
                 >
-                  <iframe
-                    id="console-frame"
+                  {getPanelLabel(state.leftPanel.type)}
+                </span>
+              </div>
+              <div class="top-0 right-0 h-full rounded-2xl relative" ref={state.rightPanelRef}>
+                <ResizeMenu state={state} />
+                <div class="ml-8 relative h-full rounded-2xl overflow-hidden">
+                  <div
                     class={clsx(
-                      "w-full h-full rounded-2xl",
-                      (!state.render.value || !state.rightPanel.loaded) && "hidden"
-                    )}
-                    src={getPanelSource(state.rightPanel.type)}
-                    onLoad={() => {
-                      state.rightPanel.loaded = true;
-                    }}
-                  />
-
-                  <span
-                    class={clsx(
-                      "text-gray-500 dark:text-gray-300 absolute text-white font-semibold text-xl",
-                      state.render.value && state.rightPanel.loaded && "hidden"
+                      "w-full h-full rounded-2xl flex justify-center items-center bg-gray-100 dark:bg-gray-800"
                     )}
                   >
-                    {getPanelLabel(state.rightPanel.type)}
-                  </span>
+                    <iframe
+                      id="console-frame"
+                      class={clsx(
+                        "w-full h-full rounded-2xl",
+                        (!state.render.value || !state.rightPanel.loaded) && "hidden"
+                      )}
+                      src={getPanelSource(state.rightPanel.type)}
+                      onLoad={() => {
+                        state.rightPanel.loaded = true;
+                      }}
+                    />
+
+                    <span
+                      class={clsx(
+                        "text-gray-500 dark:text-gray-300 absolute text-white font-semibold text-xl",
+                        state.render.value && state.rightPanel.loaded && "hidden"
+                      )}
+                    >
+                      {getPanelLabel(state.rightPanel.type)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <Menu />
-        </Bubble>
-        <script src={browser.runtime.getURL("utils/console.js")} />
-      </>
+            <Menu />
+          </>
+        ) : (
+          <BetaDialog />
+        )}
+      </Bubble>
     );
   }
 });

@@ -4,6 +4,7 @@ import {
   PropType,
   Ref,
   defineComponent,
+  inject,
   onMounted,
   reactive,
   ref,
@@ -20,6 +21,7 @@ import clsx from "clsx";
 import { getStore } from "~/src/utils/store";
 import interact from "interactjs";
 import { useIsMoving } from "~/src/utils/context";
+import { clearLastExecution } from "~/src/utils/run";
 
 interface ResizeData {
   height: number;
@@ -152,6 +154,21 @@ const useResizeable = (
       });
     }
   };
+  const handleWindowResize = (): void => {
+    isResizing.value = true;
+    clearTimeout(windowResizeTimeout.value);
+    windowResizeTimeout.value = setTimeout(() => {
+      if (card.value) {
+        const rect = card.value.getBoundingClientRect();
+
+        isResizing.value = false;
+        onResize({
+          height: rect.height,
+          width: rect.width
+        });
+      }
+    }, 500);
+  };
 
   onMounted(() => {
     const element = card.value;
@@ -159,6 +176,7 @@ const useResizeable = (
     if (!element) return;
 
     setSize();
+    handleWindowResize();
     interactable.value = interact(element)
       .resizable({
         edges: getResizeEdges(position.direction),
@@ -185,19 +203,7 @@ const useResizeable = (
       .styleCursor(false);
   });
   window.addEventListener("resize", () => {
-    isResizing.value = true;
-    clearTimeout(windowResizeTimeout.value);
-    windowResizeTimeout.value = setTimeout(() => {
-      if (card.value) {
-        const rect = card.value.getBoundingClientRect();
-
-        isResizing.value = false;
-        onResize({
-          height: rect.height,
-          width: rect.width
-        });
-      }
-    }, 500);
+    handleWindowResize();
   });
   watch(position, ({ direction }) => {
     if (resizeDirection.value !== direction) {
@@ -254,6 +260,7 @@ const BubbleButton = defineComponent({
   },
   setup(props) {
     const isHovered = ref(false);
+    const unmount = inject<() => void>("unmount");
 
     return () => {
       return (
@@ -286,6 +293,12 @@ const BubbleButton = defineComponent({
             hoverBehavior="scale"
             size="sm"
             iconProps={{ path: mdiClose, size: "md" }}
+            onClick={() => {
+              if (unmount) {
+                clearLastExecution();
+                unmount();
+              }
+            }}
           />
         </>
       );
@@ -332,7 +345,8 @@ const Bubble = defineComponent({
     onResize: {
       type: Function as PropType<ResizeHandler>,
       required: true
-    }
+    },
+    showResizeHandle: Boolean
   },
   setup(props, context) {
     const margin = 8;
@@ -351,7 +365,7 @@ const Bubble = defineComponent({
 
     return () => {
       return (
-        <div class="fixed top-0 left-0 z-full w-0 h-0 h-16 w-16 group" ref={container}>
+        <div class="fixed top-0 left-0 w-0 h-0 h-16 w-16 group z-full" ref={container}>
           <Gradient />
           <BubbleButton ref={bubble} handleClick={handleBubbleClick} />
           <div
@@ -379,7 +393,7 @@ const Bubble = defineComponent({
               <Card
                 background={false}
                 class={clsx(
-                  "h-full w-full shadow-2xl rounded-2xl transform transition",
+                  "h-full w-full shadow-2xl rounded-2xl transform transition absolute",
                   isResizing.value ? "bg-gray-100 dark:bg-gray-800" : "bg-gray-200 dark:bg-gray-700"
                 )}
               >
@@ -392,7 +406,7 @@ const Bubble = defineComponent({
                   {context.slots.default?.()}
                 </div>
               </Card>
-              <ResizeHandle direction={position.direction} />
+              {props.showResizeHandle && <ResizeHandle direction={position.direction} />}
             </div>
           </div>
         </div>

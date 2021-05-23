@@ -5,7 +5,7 @@ declare global {
     value: null | V;
   }
   interface Window {
-    codewrite: Record<string, unknown>;
+    isBetterConsoleLoaded: boolean;
   }
   interface BeforeInstallPromptEvent extends Event {
     /**

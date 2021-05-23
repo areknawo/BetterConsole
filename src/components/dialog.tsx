@@ -25,6 +25,7 @@ const { getClass, getVueProps } = styleProps<DialogStyleProps>([
 ]);
 const Dialog = defineComponent({
   props: {
+    absolute: Boolean,
     activator: Function as PropType<(props: ActivatorProps) => JSX.Element>,
     opened: Object as PropType<Ref<boolean>>,
     activatorActiveClassName: {
@@ -68,7 +69,10 @@ const Dialog = defineComponent({
       const Content = props.content;
 
       return (
-        <div class="relative flex justify-center items-center" ref={props.elementRef}>
+        <div
+          class={clsx(props.absolute ? "absolute" : "relative", "flex justify-center items-center")}
+          ref={props.elementRef}
+        >
           {Activator && (
             <Activator
               class={elevated.value ? props.activatorActiveClassName : ""}
@@ -79,6 +83,7 @@ const Dialog = defineComponent({
             />
           )}
           <Overlay
+            absolute={props.absolute}
             opened={opened.value}
             origin={props.origin}
             onClick={(): void => {

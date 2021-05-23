@@ -63,4 +63,4 @@ const execute = async (store: Store): Promise<void> => {
   processJavaScript(store);
 };
 
-export { execute };
+export { execute, clearLastExecution };
